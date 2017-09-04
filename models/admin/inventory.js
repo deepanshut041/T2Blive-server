@@ -1,5 +1,20 @@
 const mongoose = require('mongoose');
 
+const productSchema = mongoose.Schema({
+    product_id:{
+        type:String,
+        required: true
+    },
+    quantity:{
+        type:Number,
+        required: true
+    },
+    product_price:{
+        type:Number,
+        required: true
+    }
+});
+
 const inventorySchema = mongoose.Schema({
     products : [productSchema],
     inventory_date: {
@@ -36,23 +51,9 @@ const inventorySchema = mongoose.Schema({
     }
 });
 
-const productSchema = mongoose.Schema({
-    product_id:{
-        type:String,
-        required: true
-    },
-    quantity:{
-        type:Number,
-        required: true
-    },
-    product_price:{
-        type:Number,
-        required: true
-    }
-});
 
 
-const Inventory = module.exports = mongoose.model('inventorys', postSchema);
+const Inventory = module.exports = mongoose.model('inventorys', inventorySchema);
 
 //Create 
 module.exports.addInventory = function(newInventory, callback){

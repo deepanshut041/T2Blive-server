@@ -1,5 +1,20 @@
 const mongoose = require('mongoose');
 
+const productSchema = mongoose.Schema({
+    product_id:{
+        type:String,
+        required: true
+    },
+    quantity:{
+        type:Number,
+        required: true
+    },
+    product_price:{
+        type:Number,
+        required: true
+    }
+});
+
 const orderSchema = mongoose.Schema({
     products : [productSchema],
     order_date: {
@@ -32,23 +47,9 @@ const orderSchema = mongoose.Schema({
     }
 });
 
-const productSchema = mongoose.Schema({
-    product_id:{
-        type:String,
-        required: true
-    },
-    quantity:{
-        type:Number,
-        required: true
-    },
-    product_price:{
-        type:Number,
-        required: true
-    }
-});
 
 
-const Order = module.exports = mongoose.model('orders', postSchema);
+const Order = module.exports = mongoose.model('orders', orderSchema);
 
 //Create 
 module.exports.addOrder = function(newOrder, callback){
