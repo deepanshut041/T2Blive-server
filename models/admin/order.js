@@ -25,6 +25,10 @@ const orderSchema = mongoose.Schema({
     user_id: {
         type: String,
         required: true
+    },
+    payment_id: {
+        type: String,
+        required: true
     }
 });
 
