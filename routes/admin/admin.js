@@ -1,10 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const Admin = require('../../models/admin/admin');
+const User = require('../../models/user');
 const config = require('../../config/database');
+const jwt = require('jsonwebtoken');
 
 router.get('/', (req, res, next)=>{
-    Admin.getAdmins((err, post)=>{
+    User.getUsers((err, post)=>{
         if (err) {
             res.json({"error":"error"});
             console.log(err)
@@ -15,15 +16,20 @@ router.get('/', (req, res, next)=>{
 });
 
 router.post('/',(req, res, next)=>{
-    let newAdmin = new Admin({
+    let newUser = new User({
         name: req.body.name,
         email: req.body.email,
         password: req.body.password,
         phone_no: req.body.phone_no,
-        profile_pic: req.body.profile_pic
+        profile_pic: req.body.profile_pic,
+        address: req.body.address,
+        city: req.body.city,
+        state: req.body.state,
+        pin_code: req.body.pin_code,
+        is_admin: true
     });
 
-    Admin.addAdmin(newAdmin, (err, post)=>{
+    User.addUser(newUser, (err, post)=>{
         if (err) {
             res.json({success:false, msg:"Failed to post the post"});
             console.log(err);
@@ -37,24 +43,25 @@ router.post('/login', (req, res, next)=>{
     const email = req.body.email;
     const password = req.body.password;
     
-    Admin.getAdminByEmail(email, (err, admin)=>{
+    User.getUserByEmail(email, (err, user)=>{
         if(err) throw err;
-        if(!admin){
+        if(!user){
             res.json({success:false, msg:"User not found"});   
         }
         console.log()
-        Admin.comparePassword(password, admin.password, (err, isMatch) =>{
+        User.comparePassword(password, user.password, (err, isMatch) =>{
             if(err) throw err;
             if(isMatch){
-                const token = jwt.sign(admin, config.secret, { expiresIn: 604800});
+                const token = jwt.sign(user, config.secret, { expiresIn: 604800});
             
                 res.json({
                     success: true,
                     token : 'JWT ' + token,
-                    admin:{
-                        id:admin._id,
-                        name:admin.name,
-                        email:admin.email
+                    user:{
+                        id:user._id,
+                        name:user.name,
+                        email:user.email,
+                        admin:user.is_admin
                     }
                 });
             }

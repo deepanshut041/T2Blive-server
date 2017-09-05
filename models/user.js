@@ -1,4 +1,7 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
+const config = require('../config/database');
+
 
 const userSchema = mongoose.Schema({
     name : {
@@ -21,7 +24,7 @@ const userSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    address1:{
+    address:{
         type: String,
         required: true
     },
@@ -36,6 +39,10 @@ const userSchema = mongoose.Schema({
     pin_code:{
         type: Number,
         required: true
+    },
+    is_admin:{
+        type:Boolean,
+        required: true
     }
 });
 
@@ -44,7 +51,14 @@ const User = module.exports = mongoose.model('users', userSchema);
 
 //Create 
 module.exports.addUser = function(newUser, callback){
-    newUser.save(callback);
+    bcrypt.genSalt(10,(err,salt)=>{
+        bcrypt.hash(newUser.password, salt, (err, hash)=>{
+            if(err) throw err
+            newUser.password = hash;
+            newUser.save(callback);
+        })
+    })
+    
 }
 
 
@@ -59,7 +73,7 @@ module.exports.getUserById = function (id, callback) {
 
 module.exports.getUserByEmail = function(email, callback){
     const query = {email:email}
-    User.find(query, callback);
+    User.findOne(query, callback);
 }
 
 
@@ -67,4 +81,14 @@ module.exports.getUserByEmail = function(email, callback){
 module.exports.deleteUser = function(id, callback){
     User.findByIdAndRemove(id,callback);
 }
+
+//Comparing Password
+
+module.exports.comparePassword = function(candidatePassword, hash, callback){
+    bcrypt.compare(candidatePassword, hash, (err, isMatch)=>{
+        if(err) throw err;
+        callback(null, isMatch);
+    });
+}
+
 

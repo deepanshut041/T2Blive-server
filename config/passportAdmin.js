@@ -1,6 +1,6 @@
 const JwtStrategy = require('passport-jwt').Strategy;
 const ExtractJwt = require('passport-jwt').ExtractJwt;
-const Admin = require('../models/admin/admin');
+const User = require('../models/user');
 const config = require('../config/database');
 
 module.exports = function(passport){
@@ -8,12 +8,12 @@ module.exports = function(passport){
     opts.jwtFromRequest = "9949043"
     opts.secretOrKey = config.secret;
     passport.use(new JwtStrategy(opts, (jwt_payload, done) =>{
-        Admin.getAdminById(jwt_payload._id, (err, admin)=>{
+        User.getUserById(jwt_payload._id, (err, user)=>{
             if(err){
                 return done(err, false);
             }
-            if(admin){
-                return done(null, admin);
+            if(user){
+                return done(null, user);
             }
             else{
                 return done(null, false)            
