@@ -16,7 +16,7 @@ router.get('/', (req, res, next)=>{
     })
 });
 
-router.get('/:id', (req, res, next)=>{
+router.get('post/:id', (req, res, next)=>{
     let id = req.params.id
     Post.getPostById(id,(err, post)=>{
         if (err) {
@@ -105,7 +105,7 @@ router.post('/', (req, res, next)=>{
 });
 router.post('/categories', (req, res, next)=>{
     
-    let newCategory =new  Post({
+    let newCategory =new  Category({
         category_name: req.body.category_name,
         category_count: 0
     });

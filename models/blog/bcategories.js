@@ -11,7 +11,7 @@ const bcategoriesSchema = mongoose.Schema({
     }
 });
 
-const BCategory = module.exports = mongoose.model('bCategories', bcategoriesSchema);
+const BCategory = module.exports = mongoose.model('bcategories', bcategoriesSchema);
 
 //Create 
 module.exports.addCategory = function(newCategory, callback){
