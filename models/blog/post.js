@@ -21,13 +21,17 @@ const postSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    post_imgurl: {
+    post_url: {
         type: String,
         required: true
     },
     post_date: {
         type: String,
         required: true
+    },
+    post_video:{
+        type: Boolean,
+        require:true
     },
     comment_count: {
         type: Number,

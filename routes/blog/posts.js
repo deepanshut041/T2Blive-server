@@ -1,7 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const Post = require('../../models/blog/post');
-const Comments = require('../../models/blog/comment.js');
+const Comments = require('../../models/blog/comment');
+const Category = require('../../models/blog/bcategories');
+
 
 router.get('/', (req, res, next)=>{
     Post.getPosts((err, post)=>{
@@ -57,6 +59,16 @@ router.get('/author/:id', (req, res, next)=>{
         }
     })
 });
+router.get('/categories', (req, res, next)=>{
+    Category.getCategories((err, categories)=>{
+        if (err) {
+            res.json({success:false});
+            console.log(err)
+        } else {
+            res.json(categories);
+        }
+    })
+});
 
 router.post('/', (req, res, next)=>{
     
@@ -67,8 +79,9 @@ router.post('/', (req, res, next)=>{
         post_content: req.body.post_content,
         post_author: req.body.post_author,
         post_authorId:req.body.post_authorId,
-        post_imgurl: req.body.post_imgurl,
+        post_url: req.body.post_url,
         post_date: date,
+        post_video: req.body.post_video, 
         comment_count: 0
     });
 
@@ -77,12 +90,36 @@ router.post('/', (req, res, next)=>{
             res.json({success:false, msg:"Failed to post the post"});
             console.log(err);
         } else {
-            res.json({success:true, msg:"Posted succefully"});
+            Category.updateCategoryCounter(req.body.post_categoryId,{$inc:{category_count: 1}}, (err, post)=>{
+                if (err) {
+                    res.json({success:false, msg:"Failed to update Category counter"});
+                    console.log(err)
+                } else {
+                    res.json({success:true, msg:"Posted succefully"});
+                }
+            });
+            
         }
     })
 
 });
+router.post('/categories', (req, res, next)=>{
+    
+    let newCategory =new  Post({
+        category_name: req.body.category_name,
+        category_count: 0
+    });
 
+    Category.addCategory(newCategory, (err, category)=>{
+        if (err) {
+            res.json({success:false, msg:"Failed to add the Category"});
+            console.log(err);
+        } else {
+            res.json({success:true, msg:"Category added"});
+        }
+    })
+
+});
 router.patch('/:id', (req, res, next)=>{
     let postId = req.params.id;
     let newPost ={$set:{
@@ -90,7 +127,7 @@ router.patch('/:id', (req, res, next)=>{
         post_title: req.body.post_title,
         post_content: req.body.post_content,
         post_author: req.body.post_author,
-        post_imgurl: req.body.post_imgurl
+        post_url: req.body.post_imgurl
     }};
     Post.updatePost(postId, newPost, (err, post)=>{
         if (err) {
